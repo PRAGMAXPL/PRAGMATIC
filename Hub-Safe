@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PRAGMA // Construct</title>
+  <meta name="description" content="Animated pragmatic intro page for PRAGMA" />
+  <!--
+    GitHub-safe build: no deploy scripts, no private RPC keys, no CI tokens.
+    - Addresses are PUBLIC and safe.
+    - ABI is MINIMAL (only what UI needs).
+    - All advanced deploy/ops code intentionally omitted.
+  -->
+  <style>
+    :root{
+      --bg:#275447;
+      --panel: rgba(0,0,0,.18);
+      --panel-2: rgba(0,0,0,.28);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.75);
+      --chip-bg: rgba(0,0,0,.22);
+      --chip-bd: rgba(0,0,0,.55);
+      --accent-a:#7b4bf2;
+      --accent-b:#00b69f;
+      --edge:#000000;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      --spotlight-bg: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(0, 182, 159, 0.15), transparent 30vw);
+    }
+    html,body{height:100%;}
+    body{margin:0;background-color:var(--bg);background-image:var(--spotlight-bg);transition:background-image .3s ease-out;color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";line-height:1.4;display:grid;place-items:stretch;overflow-x:hidden}
+    .bg-grid::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(to right, rgba(0,0,0,.5) 1px, transparent 1px),linear-gradient(to bottom, rgba(0,0,0,.5) 1px, transparent 1px);background-size:40px 40px;opacity:.15}
+    .pragma-mark{display:block;border-radius:10px}
+    .pragma-mark .mark-spin{transform-origin:32px 32px;animation:pragmaSpin 10s linear infinite}
+    @keyframes pragmaSpin{to{transform:rotate(360deg)}}
+    .brand:hover .pragma-mark .mark-spin{animation-duration:3s}
+    .nft-card{max-width:480px;height:auto;padding:24px;display:grid;place-items:center}
+    #nftViewer{text-align:center}
+    #nftViewer img{max-width:100%;border-radius:12px;border:1px solid var(--chip-bd);margin-bottom:20px;background:var(--panel-2)}
+    #nftViewer h2{font-size:28px;margin:0 0 16px 0;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+    #nftAttributes{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+    .nft-trait{background:var(--panel);border-radius:8px;padding:8px 12px;border:1px solid var(--chip-bd);animation:pop-in .5s cubic-bezier(.25,.46,.45,.94) forwards;opacity:0}
+    .nft-trait .type{text-transform:uppercase;font-size:10px;color:var(--muted);margin-bottom:2px}
+    .nft-trait .value{font-weight:700;font-size:14px;color:var(--text)}
+    #nftImage.loaded{animation:fade-in-scale .6s ease-out forwards}
+    #nftName.loaded{animation:fade-in-up .5s ease-out .2s forwards;opacity:0}
+    @keyframes fade-in-scale{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+    @keyframes fade-in-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pop-in{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+    .nft-image-loader{width:100%;aspect-ratio:1/1;border-radius:12px;border:4px solid var(--panel);border-top-color:var(--accent-b);animation:spin 1s linear infinite;margin-bottom:20px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px clamp(16px,4vw,40px);display:grid;grid-template-rows:auto 1fr auto;min-height:100vh;gap:20px}
+    header,footer{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    header .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+    header .logo{width:32px;height:32px;border-radius:10px;background:var(--panel-2);border:1px solid #000}
+    header .rarity{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+    header .rarity .pill{background:var(--panel-2);border:1px solid #000;color:#fff;padding:4px 8px;border-radius:8px;font-weight:700}
+    .hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:center}
+    @media(min-width:900px){.hero{grid-template-columns:1.1fr .9fr}}
+    .word{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+    .letter{font-weight:900;font-size:clamp(40px,8vw,88px);letter-spacing:.25em;text-shadow:0 4px 18px rgba(0,0,0,.45);transform:translateY(24px) rotate(-6deg);opacity:0;animation:rise .75s ease-out forwards;position:relative;transition:transform .2s ease-in-out}
+    .letter:nth-child(1){animation-delay:0s}.letter:nth-child(2){animation-delay:.08s}.letter:nth-child(3){animation-delay:.16s}.letter:nth-child(4){animation-delay:.24s}.letter:nth-child(5){animation-delay:.32s}.letter:nth-child(6){animation-delay:.40s}.letter:nth-child(7){animation-delay:.48s}.letter:nth-child(8){animation-delay:.56s}.letter:nth-child(9){animation-delay:.64s}.letter:nth-child(10){animation-delay:.72s}.letter:nth-child(11){animation-delay:.80s}
+    @keyframes rise{to{transform:translateY(0) rotate(0);opacity:1}}
+    .letter:hover{transform:translateY(-5px) scale(1.05)}
+    .letter:hover::before,.letter:hover::after{content:attr(data-letter);position:absolute;top:0;left:0;animation:glitch .3s cubic-bezier(.25,.46,.45,.94) both infinite}
+    .letter:hover::before{color:var(--accent-a);clip-path:polygon(0 0,100% 0,100% 45%,0 45%);transform:translate(-.05em,-.01em);opacity:.8}
+    .letter:hover::after{color:var(--accent-b);clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);transform:translate(.05em,.01em);opacity:.8}
+    @keyframes glitch{0%,100%{transform:translate(0)}20%{transform:translate(-.1em,.05em)}40%{transform:translate(.05em,-.1em)}60%{transform:translate(-.07em,.1em)}80%{transform:translate(.1em,-.05em)}}
+    .desc{max-width:640px;color:var(--muted);margin-top:10px;opacity:0;animation:fadeIn 1s forwards 1s}
+    .desc::after{content:'|';font-weight:200;animation:blink 1s step-end infinite;opacity:0}
+    @keyframes blink{50%{opacity:1}}
+    @keyframes fadeIn{to{opacity:1}}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{background:var(--chip-bg);border:1px solid var(--chip-bd);padding:6px 10px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transform:translateY(10px);animation:riseUp .5s ease-out forwards}
+    @keyframes riseUp{to{opacity:1;transform:translateY(0)}}
+    .chips .chip:nth-child(1){animation-delay:1.2s}.chips .chip:nth-child(2){animation-delay:1.25s}.chips .chip:nth-child(3){animation-delay:1.3s}.chips .chip:nth-child(4){animation-delay:1.35s}.chips .chip:nth-child(5){animation-delay:1.4s}.chips .chip:nth-child(6){animation-delay:1.45s}.chips .chip:nth-child(7){animation-delay:1.5s}.chips .chip:nth-child(8){animation-delay:1.55s}.chips .chip:nth-child(9){animation-delay:1.6s}
+    .addr{display:flex;align-items:center;gap:10px;margin-top:16px}
+    .addr code{border:1px solid #000;background:var(--panel);padding:8px 10px;border-radius:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12px;color:#fff;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .btn{appearance:none;border:1px solid #000;background:#000;color:#fff;padding:10px 14px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .2s ease,box-shadow .2s ease}
+    .btn.ghost{background:var(--panel);color:#fff}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+    .btn:disabled{cursor:not-allowed;opacity:.5;transform:none;box-shadow:none}
+    .panel{border:1px solid #000;border-radius:16px;background:var(--panel);padding:10px}
+    .panel-inner{border:1px solid #000;border-radius:12px;background:var(--panel);overflow:hidden}
+    footer{color:var(--muted);font-size:11px}
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.8);backdrop-filter:blur(10px);animation:modal-fade-in .3s ease-out}
+    @keyframes modal-fade-in{from{opacity:0}to{opacity:1}}
+    .modal-content{background-color:var(--bg);margin:5vh auto;padding:0;border:1px solid #000;border-radius:16px;width:90%;max-width:1200px;height:90vh;max-height:1000px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+    .close{color:var(--muted);position:absolute;top:10px;right:20px;font-size:28px;font-weight:700;cursor:pointer;z-index:10}
+    .close:hover{color:var(--text)}
+    #pragma-canvas{display:block;width:100%;height:100%}
+    .docs-section{padding:clamp(1rem,4vw,2rem);overflow-y:auto;height:100%}
+    .result{margin-top:10px;padding:10px;background:var(--panel-2);border-radius:8px;font-family:monospace;white-space:pre-wrap;word-break:break-all}
+    .mint-panel{margin-top:24px;padding:16px;border:1px solid var(--chip-bd);background:var(--panel);border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeIn 1s forwards 1.8s;opacity:0}
+    .mint-panel .button-group{display:flex;gap:12px;width:100%}
+    .mint-panel .btn{flex-grow:1}
+    .status-box{margin-top:12px;width:100%;padding:10px;background:var(--panel-2);border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12px;color:var(--muted);text-align:center;min-height:40px;display:grid;place-items:center;transition:all .3s ease;word-break:break-all}
+    .status-box.success{color:var(--accent-b);border:1px solid var(--accent-b)}
+    .status-box.error{color:#ff6b6b;border:1px solid #ff6b6b}
+    .faq-section{margin-bottom:2rem}
+    .faq-item{margin-bottom:1rem;border:1px solid var(--chip-bd);border-radius:12px;overflow:hidden;animation:riseUp .6s ease-out forwards;opacity:0;transform:translateY(10px)}
+    .faq-item:nth-child(1){animation-delay:.1s}.faq-item:nth-child(2){animation-delay:.2s}.faq-item:nth-child(3){animation-delay:.3s}.faq-item:nth-child(4){animation-delay:.4s}.faq-item:nth-child(5){animation-delay:.5s}
+    .faq-question{background:var(--panel);padding:1rem 1.5rem;cursor:pointer;font-weight:600;color:var(--text);display:flex;justify-content:space-between;align-items:center;transition:background .3s ease}
+    .faq-question:hover{background:var(--panel-2)}
+    .faq-question::after{content:'+';font-size:1.5rem;color:var(--accent-b);transition:transform .3s ease}
+    .faq-item[open] .faq-question::after{transform:rotate(45deg)}
+    .faq-answer{padding:1.5rem;background:var(--panel-2);color:var(--muted);line-height:1.6}
+    .faq-answer code{background:var(--panel);padding:.25rem .5rem;border-radius:6px;font-size:.9em}
+    .rarity-banner{width:100%;height:200px;border-radius:12px;background:url('https://pragma.fail/assets/collection-banner.png') no-repeat center/cover;margin-bottom:2rem}
+    .rarity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:1.5rem;margin-top:2rem}
+    .rarity-card{background:var(--panel);border:1px solid var(--chip-bd);border-radius:12px;padding:1rem;text-align:center;transition:transform .2s ease,box-shadow .2s ease}
+    .rarity-card:hover{transform:translateY(-5px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+    .rarity-card img{width:100%;border-radius:8px;background:var(--panel-2);margin-bottom:1rem}
+    .rarity-card .name{font-weight:700;font-size:1rem;color:var(--text)}
+    .rarity-card .chance{font-size:.8rem;color:var(--accent-b);margin-top:4px}
+    @media(max-width:600px){.rarity-banner{height:120px}.rarity-grid{gap:1rem;grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}.docs-section{padding:1rem}.modal-content{margin:2.5vh auto;height:95vh}}
+  </style>
+</head>
+<body class="bg-grid">
+  <div class="wrap">
+    <header>
+      <a href="#" class="brand" aria-label="PRAGMA Home">
+        <svg class="pragma-mark" width="36" height="36" viewBox="0 0 64 64" aria-hidden="true" role="img">
+          <defs>
+            <linearGradient id="pragma-g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--accent-a)" />
+              <stop offset="100%" stop-color="var(--accent-b)" />
+            </linearGradient>
+            <linearGradient id="pragma-g2" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--accent-b)" />
+              <stop offset="100%" stop-color="var(--accent-a)" />
+            </linearGradient>
+          </defs>
+          <rect x="2.5" y="2.5" width="59" height="59" rx="12" fill="rgba(0,0,0,.28)" stroke="#000" stroke-width="3" />
+          <g class="mark-spin">
+            <path d="M10 48 L26 16 L54 16 L38 48 Z" fill="url(#pragma-g)" stroke="#000" stroke-width="2" />
+            <path d="M26 16 L38 10 L58 16 L54 16 Z" fill="url(#pragma-g2)" stroke="#000" stroke-width="2" />
+            <path d="M10 48 L14 54 L38 48 L38 48 Z" fill="url(#pragma-g2)" stroke="#000" stroke-width="2" />
+            <path d="M19 40 q0-12 12-12 h10 a8 8 0 1 1 0 16 h-10" fill="none" stroke="#000" stroke-linecap="round" stroke-width="3.2" />
+          </g>
+        </svg>
+        <strong>PRAGMA</strong>
+      </a>
+      <div class="rarity" aria-live="polite">
+        <span>Rarity of PRAGMA:</span>
+        <span class="pill">8192</span>
+        <span>for each segment</span>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Hero">
+      <div>
+        <div class="word" aria-label="PRAGMA">
+          <span class="letter" data-letter="P">P</span> <span aria-hidden="true" class="letter" data-letter=" "> </span>
+          <span class="letter" data-letter="R">R</span> <span aria-hidden="true" class="letter" data-letter=" "> </span>
+          <span class="letter" data-letter="A">A</span> <span aria-hidden="true" class="letter" data-letter=" "> </span>
+          <span class="letter" data-letter="G">G</span> <span aria-hidden="true" class="letter" data-letter=" "> </span>
+          <span class="letter" data-letter="M">M</span> <span aria-hidden="true" class="letter" data-letter=" "> </span>
+          <span class="letter" data-letter="A">A</span>
+        </div>
+        <p class="desc" id="description"></p>
+        <div class="chips" aria-label="segments">[
+          <span class="chip">USER</span><span class="chip">PR</span><span class="chip">NI</span>
+          <span class="chip">VIRT</span><span class="chip">RES</span><span class="chip">SHR</span>
+          <span class="chip">S</span><span class="chip">PID</span>]
+        </div>
+        <div class="addr">
+          <code id="address">0x173dCc9E2ef2cBF5e88DDaD69e46F4d866eB24C9</code>
+          <button class="btn" id="copyBtn" type="button" aria-label="Copy token address">Copy</button>
+        </div>
+        <div class="mint-panel" aria-label="Mint Panel">
+          <button class="btn" id="connectButton">Connect Wallet to Spawn</button>
+          <div id="mintControls" style="display:none;width:100%">
+            <div class="button-group">
+              <button class="btn ghost" id="approveButton">1. Approve PRAGMA</button>
+              <button class="btn" id="mintButton" disabled>2. Spawn PRAGMA</button>
+            </div>
+            <div id="statusBox" class="status-box">Connect your wallet to begin the spawn sequence.</div>
+          </div>
+        </div>
+        <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:12px">
+          <a class="btn ghost" href="#docs">DOCS</a>
+          <a class="btn" href="#pragma" style="background:var(--accent-a);border-color:var(--accent-a)">PRAGMA</a>
+          <a class="btn ghost" href="#rarity">Rarity</a>
+          <a class="btn ghost" href="#audit">Audit</a>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-inner">
+          <canvas id="cube" style="display:block;width:100%;aspect-ratio:1/1;background:rgba(0,0,0,.18)"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© PRAGMA</span>
+      <span>2025 pragmatic</span>
+    </footer>
+  </div>
+
+  <!-- Modals -->
+  <div id="pragmaModal" class="modal" aria-hidden="true"><div class="modal-content"><span class="close" aria-label="Close">&times;</span><canvas id="pragma-canvas"></canvas></div></div>
+  <div id="docsModal" class="modal" aria-hidden="true"><div class="modal-content"><span class="close" aria-label="Close">&times;</span><div class="docs-section" id="docsSection"></div></div></div>
+  <div id="rarityModal" class="modal" aria-hidden="true"><div class="modal-content"><span class="close" aria-label="Close">&times;</span><div class="docs-section" id="raritySection"></div></div></div>
+  <div id="auditModal" class="modal" aria-hidden="true"><div class="modal-content" style="max-width:700px;height:auto"><span class="close" aria-label="Close">&times;</span><div class="docs-section"><h2>Local UNIX Distribution Audit</h2><p>This tool runs locally in your browser (no RPC), mirroring the on‑chain deterministic formula.</p><div id="audit-result-content" class="result" style="min-height:200px">Click the main 'Audit' button to begin.</div></div></div></div>
+  <div id="nftModal" class="modal" aria-hidden="true"><div class="modal-content nft-card"><span class="close" aria-label="Close">&times;</span><div id="nftViewer"><div class="nft-image-loader"></div><img id="nftImage" alt="Your PRAGMA NFT" style="display:none" /><h2 id="nftName"></h2><div id="nftAttributes"></div></div></div></div>
+
+  <!-- Ethers v5 (safe CDN for demo) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" integrity="sha512-8rH1vHYc1pN9M2qQmK9P8p6k7r7cQmQ45rYQyY7n1y1xq6kqK0vQ0tX7vE5j+9z0q6Gq6i0n8f8zLw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script>
+    // ====== CONFIG (public) ======
+    const CONFIG = {
+      requiredChainIdHex: '0x2611',      // Plasma chain 9745
+      tokenAddress: '0x173dCc9E2ef2cBF5e88DDaD69e46F4d866eB24C9',   // ERC20 $PRAGMA (public)
+      constructAddress: '0x3c4232aea2c5589d326461281958d60a5acf8fed' // ERC404 (public)
+      // NOTE: No private RPC keys, no deploy mnemonics here.
+    };
+
+    // Minimal ABIs (public interface only)
+    const ERC20_ABI = [
+      'function approve(address spender, uint256 amount) external returns (bool)',
+      'function allowance(address owner, address spender) view returns (uint256)'
+    ];
+    const PRAGMA_ABI = [
+      'function spawnPRAGMA()',
+      'function tokenURI(uint256 tokenId) view returns (string)',
+      'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
+    ];
+
+    // ====== MINT UI (no deploy code) ======
+    document.addEventListener('DOMContentLoaded', () => {
+      const connectButton = document.getElementById('connectButton');
+      const mintControls  = document.getElementById('mintControls');
+      const approveButton = document.getElementById('approveButton');
+      const mintButton    = document.getElementById('mintButton');
+      const statusBox     = document.getElementById('statusBox');
+
+      let provider, signer, user, token, construct;
+
+      const setStatus = (msg, cls='') => {
+        statusBox.textContent = msg;
+        statusBox.className = 'status-box';
+        if (cls) statusBox.classList.add(cls);
+      };
+
+      async function ensureNetwork(){
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== CONFIG.requiredChainIdHex){
+          setStatus('❌ Wrong Network! Please connect to Plasma (Chain ID: 9745).','error');
+          return false;
+        }
+        return true;
+      }
+
+      async function connect(){
+        if (!window.ethereum){ setStatus('MetaMask not found.','error'); return; }
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        if (!await ensureNetwork()) return;
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer   = provider.getSigner();
+        user     = await signer.getAddress();
+        token    = new ethers.Contract(CONFIG.tokenAddress, ERC20_ABI, signer);
+        construct= new ethers.Contract(CONFIG.constructAddress, PRAGMA_ABI, signer);
+        connectButton.style.display='none';
+        mintControls.style.display='flex';
+        mintControls.style.flexDirection='column';
+        setStatus(`✅ Connected: ${user.slice(0,6)}...${user.slice(-4)}`);
+        await checkAllowance();
+      }
+
+      async function checkAllowance(){
+        try{
+          const needed = ethers.utils.parseUnits('200000', 18);
+          const a = await token.allowance(user, CONFIG.constructAddress);
+          if (a.gte(needed)){
+            approveButton.disabled = true; approveButton.textContent='✅ Approved';
+            mintButton.disabled=false; setStatus('Ready to spawn. Proceed to step 2.');
+          } else {
+            approveButton.disabled = false; mintButton.disabled=true;
+            setStatus('Approve the contract to use your $PRAGMA tokens.');
+          }
+        }catch(e){ console.error(e); setStatus('Could not check approval status.','error'); }
+      }
+
+      async function approve(){
+        try{
+          setStatus('Requesting approval...');
+          const tx = await token.approve(CONFIG.constructAddress, ethers.utils.parseUnits('200000',18));
+          setStatus('Approval sent. Waiting...');
+          await tx.wait();
+          approveButton.disabled=true; approveButton.textContent='✅ Approved';
+          mintButton.disabled=false; setStatus('✅ Approval successful! You can now mint.','success');
+        }catch(e){ console.error(e); setStatus(`Approval failed: ${e.message || 'unknown'}`,'error'); }
+      }
+
+      async function mint(){
+        try{
+          setStatus('Preparing to spawn... confirm in wallet.');
+          const tx = await construct.spawnPRAGMA();
+          setStatus('Spawn initiated. Waiting for confirmation...');
+          const r = await tx.wait();
+          const iface = new ethers.utils.Interface(['event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)']);
+          let tokenId = null;
+          for (const log of r.logs){
+            if (log.address.toLowerCase() === CONFIG.constructAddress.toLowerCase()){
+              try { const p = iface.parseLog(log); if (p.name==='Transfer' && p.args.from === ethers.constants.AddressZero){ tokenId = p.args.tokenId.toString(); break; } } catch {}
+            }
+          }
+          if (tokenId){ onMintSuccess(tokenId); } else { setStatus('🎉 Spawned! (ID unknown)','success'); }
+        }catch(e){ console.error(e); setStatus(`Minting failed: ${e.reason || e.message || 'unknown'}`,'error'); }
+      }
+
+      function onMintSuccess(tokenId){
+        const btn = document.createElement('button');
+        btn.className='btn'; btn.style.marginTop='10px'; btn.textContent='View Your PRAGMA 🖼️';
+        btn.onclick = () => showNFT(tokenId);
+        statusBox.innerHTML = `🎉 PRAGMA Spawned Successfully! (ID: ${tokenId})`;
+        statusBox.classList.add('success');
+        statusBox.appendChild(btn);
+        mintButton.disabled=true; mintButton.textContent='🎉 Spawned!';
+      }
+
+      async function showNFT(id){
+        const modal = document.getElementById('nftModal');
+        const img = document.getElementById('nftImage');
+        const name = document.getElementById('nftName');
+        const attrs = document.getElementById('nftAttributes');
+        const loader = document.querySelector('.nft-image-loader');
+        modal.style.display='block'; loader.style.display='block'; img.style.display='none'; img.classList.remove('loaded'); name.classList.remove('loaded'); name.textContent='Loading Metadata...'; attrs.innerHTML='';
+        try{
+          const uri = await construct.tokenURI(id);
+          const meta = parseDataURI(uri);
+          name.textContent = meta?.name || `PRAGMA #${id}`;
+          if (meta?.image) img.src = meta.image;
+          img.onload = () => { loader.style.display='none'; img.style.display='block'; img.classList.add('loaded'); name.classList.add('loaded'); };
+          (meta?.attributes||[]).forEach((a,i)=>{ const el=document.createElement('div'); el.className='nft-trait'; el.style.animationDelay=`${0.4+i*0.1}s`; el.innerHTML=`<div class="type">${a.trait_type}</div><div class="value">${a.value}</div>`; attrs.appendChild(el); });
+        }catch(e){ console.error(e); name.textContent='Error loading NFT'; loader.style.display='none'; }
+      }
+
+      function parseDataURI(uri){
+        if (!uri?.startsWith('data:application/json;base64,')) return null;
+        try{ const raw = atob(uri.split('base64,')[1]); return JSON.parse(raw); }catch{ return null; }
+      }
+
+      connectButton.addEventListener('click', connect);
+      approveButton.addEventListener('click', approve);
+      mintButton.addEventListener('click', mint);
+
+      if (window.ethereum){
+        window.ethereum.on('accountsChanged', ()=>location.reload());
+        window.ethereum.on('chainChanged',  ()=>location.reload());
+      }
+    });
+
+    // ====== Local Audit (client-only) ======
+    (()=>{
+      const START=1, END=666; const WEIGHTS=[105,510,1516,3514,5511,7508,8709,10000]; const UNIXS=['USER','PR','NI','VIRT','RES','SHR','S','PID'];
+      const idxOf = (id)=>{ const packed = ethers.utils.solidityPack(['string','uint256'], ['PRAGMA.UNIX', id]); const r = BigInt(ethers.utils.keccak256(packed)) % 10000n; for (let i=0;i<WEIGHTS.length;i++){ if (r < BigInt(WEIGHTS[i])) return i; } return WEIGHTS.length-1; };
+      const run = ()=>{ const div=document.getElementById('audit-result-content'); const tallies=Object.fromEntries(UNIXS.map(u=>[u,0])); for (let id=START; id<=END; id++){ tallies[UNIXS[idxOf(id)]]++; } const total=END-START+1; let out='=== Local Calculation (Verifiable) ===\n'; for (const u of UNIXS){ const n=tallies[u]; out += `${u.padEnd(4)}: ${String(n).padStart(3)}  (${(100*n/total).toFixed(2)}%)\n`; } out += `\nTotal NFTs: ${total}\nWeights (bps cumulative): ${WEIGHTS.join(', ')}`; div.textContent = out; };
+      const btn=document.querySelector('a[href="#audit"]'); if (btn){ btn.addEventListener('click', (e)=>{ e.preventDefault(); document.getElementById('auditModal').style.display='block'; run(); }); }
+    })();
+
+    // ====== Docs & Rarity content (static; no alpha) ======
+    (function(){
+      const docs = `
+        <h2>PRAGMA Construct: The ERC404 Frontier on Plasma</h2>
+        <p>PRAGMA fuses fungible $PRAGMA with 666 ERC404 constructs. Spawn your segment, trade shards, and use unified liquidity. (This is the public UI. Deploy/ops code intentionally omitted.)</p>
+        <div class="faq-section">
+          <details class="faq-item"><summary class="faq-question">What is PRAGMA?</summary><div class="faq-answer"><p>$PRAGMA (ERC20) + ERC404 constructs on Plasma (Chain ID 9745). Public addresses only; no private infra exposed.</p></div></details>
+          <details class="faq-item"><summary class="faq-question">How does spawning work?</summary><div class="faq-answer"><ol><li>Connect wallet on Plasma.</li><li>Approve 200k $PRAGMA.</li><li>Spawn via contract call.</li></ol><p>All logic handled on-chain.</p></div></details>
+          <details class="faq-item"><summary class="faq-question">Where is the ABI?</summary><div class="faq-answer"><p>A minimal, public interface is embedded. Full ABI and deploy scripts are kept private.</p></div></details>
+          <details class="faq-item"><summary class="faq-question">Security</summary><div class="faq-answer"><p>Never hardcode private keys or RPC secrets in the frontend. Verify contracts and addresses before use.</p></div></details>
+        </div>`;
+      const rarity = `
+        <div class="rarity-banner"></div>
+        <h2>PRAGMA Trait & Metadata Generation</h2>
+        <p>Deterministic trait assignment using keccak256 across 8 UNIX segments. Preview assets use public GIFs.</p>
+        <div class="rarity-grid">
+          ${[['1.gif','USER','1.05%'],['2.gif','PR','4.05%'],['3.gif','NI','10.06%'],['4.gif','VIRT','19.98%'],['5.gif','RES','19.97%'],['6.gif','SHR','19.97%'],['7.gif','S','12.01%'],['PRAGMA.gif','PID','12.91%']].map(([g,n,c])=>`
+            <div class="rarity-card"><img src="https://pragma.fail/assets/${g}" alt="${n} Trait"/><div class="name">${n}</div><div class="chance">${c} Chance</div></div>`).join('')}
+        </div>`;
+      document.getElementById('docsSection').innerHTML = docs;
+      document.getElementById('raritySection').innerHTML = rarity;
+    })();
+
+    // ====== UI Helpers (copy, typing, modals, cube, spotlight) ======
+    (function(){
+      const btn = document.getElementById('copyBtn'); const addrEl = document.getElementById('address');
+      btn.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(addrEl.textContent); btn.textContent='Copied'; setTimeout(()=>btn.textContent='Copy', 1200); }catch(e){} });
+      const el = document.getElementById('description'); const text = 'Precision-ready, adaptive and minimalist. Enter the PRAGMA construct. Segments initialize below.'; let i=0; el.textContent=''; setTimeout(function type(){ if (i<text.length){ el.textContent += text.charAt(i++); setTimeout(type, 30);} }, 1000);
+      const pragmaModal = document.getElementById('pragmaModal'); const docsModal = document.getElementById('docsModal'); const rarityModal = document.getElementById('rarityModal'); const auditModal = document.getElementById('auditModal');
+      const all=[pragmaModal,docsModal,rarityModal,auditModal];
+      const open = (m)=>{ m.style.display='block'; if (m===pragmaModal) initPragmaAnimation(); };
+      document.querySelector('a[href="#pragma"]').addEventListener('click', e=>{ e.preventDefault(); open(pragmaModal); });
+      document.querySelector('a[href="#docs"]').addEventListener('click',   e=>{ e.preventDefault(); open(docsModal); });
+      document.querySelector('a[href="#rarity"]').addEventListener('click', e=>{ e.preventDefault(); open(rarityModal); });
+      document.querySelectorAll('.close').forEach(x=>x.addEventListener('click',()=>all.forEach(m=>m.style.display='none')));
+      window.addEventListener('click', e=> all.forEach(m=>{ if (e.target===m) m.style.display='none'; }));
+      // spotlight
+      const root=document.documentElement; window.addEventListener('mousemove', e=>{ root.style.setProperty('--mouse-x', `${e.clientX}px`); root.style.setProperty('--mouse-y', `${e.clientY}px`); });
+      // cube
+      (function(){
+        const canvas=document.getElementById('cube'); const ctx=canvas.getContext('2d'); const DPR=Math.min(2, window.devicePixelRatio||1);
+        function fit(){ const r=canvas.getBoundingClientRect(); canvas.width=Math.floor(r.width*DPR); canvas.height=Math.floor(r.height*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); }
+        new ResizeObserver(fit).observe(canvas);
+        const V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]]; const E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]]; const F=[[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[1,2,6,5],[0,3,7,4]]; let t=0, tx=.8, ty=0, rx=.8, ry=0;
+        window.addEventListener('mousemove', e=>{ ty=(e.clientX/window.innerWidth - .5)*2; tx=(e.clientY/window.innerHeight - .5)*-2 + .8; });
+        function rot(v,ax,ay,az){ let [x,y,z]=v; const cy=Math.cos(ax),sy=Math.sin(ax); let y1=y*cy - z*sy, z1=y*sy + z*cy, x1=x; const cx=Math.cos(ay),sx=Math.sin(ay); let z2=z1*cx - x1*sx, x2=z1*sx + x1*cx, y2=y1; const cz=Math.cos(az),sz=Math.sin(az); return [x2*cz - y2*sz, x2*sz + y2*cz, z2]; }
+        function proj(p,w,h){ const fov=3.2, s=Math.min(w,h)*.22, d=fov/(fov-(p[2]+3)); return [w/2 + p[0]*s*d, h/2 + p[1]*s*d, d]; }
+        function grad(x0,y0,x1,y1){ const g=ctx.createLinearGradient(x0,y0,x1,y1); const cs=getComputedStyle(document.documentElement); g.addColorStop(0, cs.getPropertyValue('--accent-a').trim()); g.addColorStop(1, cs.getPropertyValue('--accent-b').trim()); return g; }
+        function draw(){ const w=canvas.width/DPR, h=canvas.height/DPR; ctx.clearRect(0,0,w,h); t+=.005; rx+= (tx-rx)*.05; ry+= (ty-ry)*.05; const ax=rx, ay=ry, az=Math.cos(t*.5)*.2; const P=V.map(v=>proj(rot(v,ax,ay,az), w,h)); const O=F.map((f,i)=>({i, d:(P[f[0]][2]+P[f[1]][2]+P[f[2]][2]+P[f[3]][2])/4})).sort((a,b)=>a.d-b.d); for(const o of O){ const f=F[o.i]; const g=grad(P[f[0]][0],P[f[0]][1],P[f[2]][0],P[f[2]][1]); ctx.fillStyle=g; ctx.globalAlpha=.9; ctx.beginPath(); ctx.moveTo(P[f[0]][0],P[f[0]][1]); for(let k=1;k<f.length;k++) ctx.lineTo(P[f[k]][0],P[f[k]][1]); ctx.closePath(); ctx.fill(); }
+          ctx.globalAlpha=1; ctx.lineWidth=Math.max(.5/DPR, Math.min(w,h)*.0026); ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--edge').trim(); ctx.beginPath(); for(const [a,b] of E){ ctx.moveTo(P[a][0],P[a][1]); ctx.lineTo(P[b][0],P[b][1]); } ctx.stroke(); requestAnimationFrame(draw); }
+        fit(); draw();
+      })();
+    })();
+
+    // ====== PRAGMA Migration Animation (visual only) ======
+    function initPragmaAnimation(){
+      const canvas=document.getElementById('pragma-canvas'); if (!canvas.getContext) return; const ctx=canvas.getContext('2d'); canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; let id; let phase=0; let particles=[]; let pool={x:canvas.width/2,y:canvas.height/2,r:100,tokens:1000,nfts:0}; let tx=''; let t0=Date.now();
+      for(let i=0;i<200;i++){ particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,size:Math.random()*3+1,color:'rgba(123,75,242,.8)',type:'dust'}); }
+      function draw(){ if (document.getElementById('pragmaModal').style.display==='none'){ cancelAnimationFrame(id); return; } ctx.clearRect(0,0,canvas.width,canvas.height);
+        if(phase===0){ particles.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill(); const dx=pool.x-p.x, dy=pool.y-p.y; const d=Math.hypot(dx,dy); if(d<150){ p.vx+=dx*.01; p.vy+=dy*.01; } }); ctx.fillStyle='#fff'; ctx.font='20px monospace'; ctx.fillText('Migrating $PRAGMA dust to ERC404...',20,40); if(Date.now()-t0>5000){ phase=1; t0=Date.now(); particles=particles.filter(p=>Math.random()>.5).map(p=>({...p,type:'nft',color:'rgba(0,182,159,.8)',size:5})); pool.nfts=50; tx='0x'+Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join(''); } }
+        else if(phase===1){ particles.forEach(p=>{ p.x+=p.vx*.5; p.y+=p.vy*.5; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill(); }); ctx.beginPath(); ctx.arc(pool.x,pool.y,pool.r,0,Math.PI*2); ctx.fillStyle='rgba(0,182,159,.3)'; ctx.fill(); ctx.strokeStyle='#00b69f'; ctx.lineWidth=2; ctx.stroke(); ctx.fillStyle='#fff'; ctx.font='16px monospace'; ctx.fillText(`NFTs Born: ${pool.nfts}`, pool.x-50, pool.y-50); ctx.fillText(`TX: ${tx.slice(0,10)}...`,20,canvas.height-60); if(Date.now()-t0>5000){ phase=2; t0=Date.now(); } }
+        else { particles.forEach(p=>{ const dx=pool.x-p.x, dy=pool.y-p.y; const d=Math.hypot(dx,dy); if(d<pool.r+p.size){ p.vx=(Math.random()-.5)*4; p.vy=(Math.random()-.5)*4; pool.tokens+=Math.random()*10; if(Math.random()>.7) pool.nfts++; } p.x+=p.vx; p.y+=p.vy; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill(); }); ctx.beginPath(); ctx.arc(pool.x,pool.y,pool.r,0,Math.PI*2); ctx.fillStyle='rgba(0,182,159,.3)'; ctx.fill(); ctx.strokeStyle='#00b69f'; ctx.lineWidth=2; ctx.stroke(); ctx.fillStyle='#fff'; ctx.font='16px monospace'; ctx.fillText('$PRAGMA / NFT Liquidity: Unified', pool.x-80, pool.y-30); ctx.fillText(`Tokens: ${Math.floor(pool.tokens)} | NFTs: ${pool.nfts}`, pool.x-60, pool.y+10); }
+        id=requestAnimationFrame(draw);
+      }
+      draw();
+    }
+  </script>
+</body>
+</html>
