@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRAGMA Construct | Interactive Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Plasma Minimalist -->
+    <!-- Application Structure Plan: The SPA is structured as a single-page dashboard with a sticky top navigation bar. This allows users to quickly jump between key sections: an introduction (Home), core Features, a step-by-step guide (How It Works), data-driven Tokenomics, and a Quick Start guide. This non-linear, section-based architecture was chosen over a simple document layout to cater to different user intents. A potential investor might jump straight to Tokenomics, while a new user would start at "How It Works". This design prioritizes scannability and direct access to information, making the complex project details more digestible and user-friendly. -->
+    <!-- Visualization & Content Choices: 
+        1. Rarity Data -> Goal: Compare/Inform -> Viz: Chart.js Doughnut Chart -> Interaction: Hover tooltips display trait name, count, and percentage. -> Justification: A doughnut chart provides an immediate visual summary of the rarity distribution, which is more intuitive and faster to interpret than a raw data table for comparing proportions. -> Library: Chart.js.
+        2. Minting/Trading Flow -> Goal: Organize/Inform -> Presentation: Numbered step-by-step visual process guides built with HTML/Tailwind. -> Interaction: Clear visual separation of steps guides the user through the process. -> Justification: Breaking down complex processes like minting into discrete, numbered steps simplifies the user's learning journey and makes the procedure feel less intimidating. -> Method: HTML/CSS.
+        3. Core Features -> Goal: Inform -> Presentation: A responsive grid of feature cards. -> Interaction: Subtle hover effects on cards provide visual feedback. -> Justification: A card-based layout is a modern, scannable format that presents key features as distinct, digestible pieces of information, improving readability over a simple list or table. -> Method: HTML/CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        .font-mono {
+            font-family: 'Source Code Pro', monospace;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hero-bg {
+            background-image: linear-gradient(to top, #f9fafb, rgba(255,255,255,0)), url('https://pragma.fail/assets/collection-banner.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                 <img src="https://pragma.fail/pragma.png" alt="PRAGMA Logo" class="h-8 w-8">
+                <h1 class="text-2xl font-bold text-gray-800">PRAGMA</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="text-gray-600 hover:text-indigo-600 transition">Home</a>
+                <a href="#features" class="text-gray-600 hover:text-indigo-600 transition">Features</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600 transition">How It Works</a>
+                <a href="#tokenomics" class="text-gray-600 hover:text-indigo-600 transition">Tokenomics</a>
+                <a href="#get-started" class="text-gray-600 hover:text-indigo-600 transition">Get Started</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none">
+                 <span class="w-6 h-0.5 bg-gray-600 block my-1"></span>
+                 <span class="w-6 h-0.5 bg-gray-600 block my-1"></span>
+                 <span class="w-6 h-0.5 bg-gray-600 block my-1"></span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+             <a href="#home" class="block py-2 text-gray-600 hover:text-indigo-600">Home</a>
+             <a href="#features" class="block py-2 text-gray-600 hover:text-indigo-600">Features</a>
+             <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-indigo-600">How It Works</a>
+             <a href="#tokenomics" class="block py-2 text-gray-600 hover:text-indigo-600">Tokenomics</a>
+             <a href="#get-started" class="block py-2 text-gray-600 hover:text-indigo-600">Get Started</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="py-20 md:py-24 bg-white">
+            <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <h2 class="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">PRAGMA Construct</h2>
+                    <p class="mt-4 max-w-xl mx-auto md:mx-0 text-lg md:text-xl text-gray-600">
+                        Precision-ready, adaptive, and minimalist. The first ERC404 hybrid on Plasma, fusing fungible `$PRAGMA` tokens with 666 exclusive NFTs for a unified liquidity pool.
+                    </p>
+                    <div class="mt-8 flex justify-center md:justify-start items-center gap-4">
+                        <a href="https://pragma.fail" target="_blank" rel="noopener noreferrer" class="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-indigo-700 transition transform hover:scale-105">Spawn Your Construct</a>
+                        <a href="#get-started" class="bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-lg hover:bg-gray-300 transition">Get Started</a>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center">
+                    <img src="https://pragma.fail/assets/6.gif" alt="Animated PRAGMA Cube" class="w-64 h-64 md:w-80 md:h-80 object-contain">
+                </div>
+            </div>
+             <div class="container mx-auto px-6 mt-16">
+                 <div class="max-w-4xl mx-auto glass-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">Contract Details (Plasma Chain)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-gray-500">Token (ERC20)</p>
+                            <p class="font-mono text-sm text-indigo-700 break-all">0x173dCc9E2ef2cBF5e88DDaD69e46F4d866eB24C9</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-gray-500">NFT (ERC404)</p>
+                            <p class="font-mono text-sm text-indigo-700 break-all">0x3c4232aea2c5589d326461281958d60a5acf8fed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Core Features</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Explore the innovative technology powering the PRAGMA ecosystem.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-xl font-semibold mb-2">ERC404 Hybrid</h3>
+                        <p class="text-gray-600">Seamless fusion of ERC20 tokens and ERC721 NFTs, allowing you to trade fractions without silos.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-xl font-semibold mb-2">Procedural NFTs</h3>
+                        <p class="text-gray-600">666 unique constructs with deterministic traits generated on-chain via `keccak256` hashing.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-xl font-semibold mb-2">Instant Minting</h3>
+                        <p class="text-gray-600">Approve `$PRAGMA` dust, auto-mint your NFT, and watch it fragment into tradable shards instantly.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-xl font-semibold mb-2">Rarity Audit</h3>
+                        <p class="text-gray-600">An integrated, client-side simulation tool to verify the on-chain trait distribution and rarity.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-xl font-semibold mb-2">Animated Modals</h3>
+                        <p class="text-gray-600">Engaging visualizations for PRAGMA migration, rarity grids, and your personal NFT viewer.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <h3 class="text-xl font-semibold mb-2">Unified Liquidity</h3>
+                        <p class="text-gray-600">A robust Uniswap V3 pool maintains a constant K-invariant for all token-NFT swaps.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">How It Works</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">From minting your first Construct to trading on the open market, here’s everything you need to know.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-6 text-gray-800">The Minting Flow</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold">1</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-lg">Connect Wallet</h4>
+                                    <p class="text-gray-600">Use the "Connect" button to link your MetaMask wallet to the Plasma network.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold">2</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-lg">Approve Tokens</h4>
+                                    <p class="text-gray-600">A one-time approval for 200,000 `$PRAGMA` tokens is required to enable the minting contract.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold">3</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-lg">Spawn Construct</h4>
+                                    <p class="text-gray-600">Call the `spawnPRAGMA()` function. This burns your dust and mints one of the 666 exclusive NFTs.</p>
+                                </div>
+                            </div>
+                             <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold">4</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-lg">Fragment & Trade</h4>
+                                    <p class="text-gray-600">Your new NFT automatically fragments into ~10k `$PRAGMA` shards, making it instantly tradable.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-6 text-gray-800">Trading & Auditing</h3>
+                         <div class="space-y-6">
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <h4 class="font-semibold text-lg mb-2">Trading on Uniswap</h4>
+                                <p class="text-gray-600">The primary liquidity pool consists of `$PRAGMA` and Construct shards. Swap tokens to acquire partial NFT ownership, or sell a full NFT for its equivalent token value.</p>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-lg">
+                                <h4 class="font-semibold text-lg mb-2">Viewing & Auditing</h4>
+                                <p class="text-gray-600">Use the in-app modals to watch animated visualizations of the protocol, explore the rarity of different traits, and run a local audit to verify the on-chain distribution.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tokenomics" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Tokenomics & Rarity</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">A deep dive into the supply, distribution, and rarity of PRAGMA assets.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-3xl font-bold text-indigo-600">1B</h3>
+                        <p class="text-gray-600 font-medium">$PRAGMA Fixed Supply</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-3xl font-bold text-indigo-600">666</h3>
+                        <p class="text-gray-600 font-medium">Max NFT Constructs</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-3xl font-bold text-indigo-600">10k</h3>
+                        <p class="text-gray-600 font-medium">Base Shards per NFT</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-xl">
+                    <h3 class="text-2xl font-semibold text-center mb-6">Construct Rarity Distribution</h3>
+                    <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">This chart illustrates the scarcity of each trait among the 666 Constructs. Hover over any segment to see the precise count and percentage. Rarer traits like 'USER' are significantly less common.</p>
+                    <div class="chart-container">
+                        <canvas id="rarityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="get-started" class="py-20 bg-white hero-bg">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Get Started</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Ready to join the ecosystem? Follow these simple steps to set up your wallet and spawn your first PRAGMA Construct.</p>
+                </div>
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass-card p-8 rounded-lg">
+                        <h3 class="font-semibold text-xl mb-4 text-gray-800">1. Wallet Setup</h3>
+                        <ul class="list-decimal list-inside space-y-3 text-gray-700">
+                            <li>Install <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-semibold">MetaMask</a> or a compatible wallet.</li>
+                            <li>
+                                Add the Plasma Network with these details:
+                                <ul class="list-disc list-inside ml-4 mt-2 bg-white/70 p-3 rounded text-sm">
+                                    <li><strong>RPC URL:</strong> `https://rpc.plasma.to`</li>
+                                    <li><strong>Chain ID:</strong> `9745`</li>
+                                    <li><strong>Symbol:</strong> `PLASMA`</li>
+                                </ul>
+                            </li>
+                            <li>Get test `$PRAGMA` from the <a href="https://plasma.to/faucet" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-semibold">official faucet</a>.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-8 rounded-lg">
+                        <h3 class="font-semibold text-xl mb-4 text-gray-800">2. Spawn Your Construct</h3>
+                         <ul class="list-decimal list-inside space-y-3 text-gray-700">
+                            <li>Connect your newly configured wallet on the main site.</li>
+                            <li>Approve the contract to use 200,000 of your `$PRAGMA`.</li>
+                            <li>Click the "Spawn PRAGMA" button.</li>
+                            <li>View your unique NFT in the post-mint modal!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-2">
+                        <img src="https://pragma.fail/pragma.png" alt="PRAGMA Logo" class="h-6 w-6">
+                        <h3 class="font-bold text-lg">PRAGMA Construct</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">© 2025 PRAGMA. Released under the MIT License.</p>
+                     <p class="text-gray-400 text-sm mt-1">Fork, spawn, iterate.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2">Resources</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://pragma.fail" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white">Official Website</a></li>
+                        <li><a href="https://plasmascan.to/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white">PlasmaScan Explorer</a></li>
+                        <li><a href="https://github.com/PRAGMAXPL" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white">GitHub</a></li>
+                        <li><a href="https://x.com/pragmaXPL" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white">Community on X</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2">Disclaimer</h3>
+                    <p class="text-gray-400 text-sm">This is experimental DeFi on the Plasma network. Always Do Your Own Research (DYOR). This is not financial advice. Contracts audited locally; production review pending.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a, nav a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (link.hash !== "") {
+                        if (mobileMenu.contains(e.target)) {
+                           mobileMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            const rarityData = {
+                labels: ['USER', 'PR', 'NI', 'VIRT', 'RES', 'SHR', 'S', 'PID'],
+                datasets: [{
+                    label: 'Construct Count',
+                    data: [7, 27, 67, 133, 133, 133, 80, 86],
+                    backgroundColor: [
+                        '#4f46e5',
+                        '#6366f1',
+                        '#818cf8',
+                        '#a5b4fc',
+                        '#c7d2fe',
+                        '#93c5fd',
+                        '#60a5fa',
+                        '#3b82f6'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 8
+                }]
+            };
+
+            const rarityPercentages = {
+                'USER': '1.05%', 'PR': '4.05%', 'NI': '10.06%', 'VIRT': '19.98%', 'RES': '19.97%', 'SHR': '19.97%', 'S': '12.01%', 'PID': '12.91%'
+            };
+
+            const config = {
+                type: 'doughnut',
+                data: rarityData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                             labels: {
+                                padding: 20,
+                                color: '#4b5563',
+                                font: {
+                                    size: 14,
+                                    family: "'Inter', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        const count = context.parsed;
+                                        const percentage = rarityPercentages[context.label];
+                                        label += `${count} Constructs (${percentage})`;
+                                    }
+                                    return label;
+                                }
+                            },
+                            backgroundColor: '#1f2937',
+                            titleFont: { size: 16 },
+                            bodyFont: { size: 14 },
+                            padding: 12,
+                            cornerRadius: 6,
+                            displayColors: false,
+                        }
+                    },
+                    cutout: '60%'
+                }
+            };
+            
+            const ctx = document.getElementById('rarityChart');
+            if(ctx) {
+                new Chart(ctx, config);
+            }
+        });
+    </script>
+</body>
+</html>
+
