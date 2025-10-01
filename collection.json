@@ -1,0 +1,8 @@
+{
+  "name": "PRAGMA",
+  "description": "Precision-ready, adaptive and minimalist PRAGMA ERC404 Construct.",
+  "image": "https://pragma.fail/assets/collection-banner.png",
+  "external_link": "https://pragma.fail",
+  "seller_fee_basis_points": 0,
+  "fee_recipient": "WALLETADDRESS"
+}
